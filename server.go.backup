@@ -1,0 +1,112 @@
+package main
+
+import (
+  "fmt"
+  "log"
+  "net/http"
+  "net/url"
+  "net/mail"
+  "github.com/gorilla/mux"
+  "github.com/hashicorp/go-version"
+)
+
+type App struct {
+  title string
+  ver version.Version                   // import from https://golangrepo.com/repo/hashicorp-go-version-go-utilities
+  maintainers []mail.Address    // https://pkg.go.dev/net/mail#Address
+  company string
+  website url.URL               // https://pkg.go.dev/net/url
+  source url.URL                // https://pkg.go.dev/net/url
+  license string
+  description string
+}
+
+// ordered list of creation TimeBuckets
+// Each TimeBucket contains an expandable array of App objects(ptr)
+//  [2020-01-23T08:23:59] --> { "myApp v1.0.0", "Foo v0.0.1", "Apple v0.0.3" }
+//  [2020-01-23T08:24:20] --> { "myApp v2.0.0", "Foo v0.0.2" }
+//  [2020-12-04T17:01:34] --> { "myApp v3.0.0" }
+//  [2021-04-12T23:56:55] --> { "myApp v3.5.0", "Orange v0.0.1" }
+//  [2021-06-06T02:11:01] --> { "myApp v4.0.2", "Apple v2.0.0" }
+//  [2020-12-04T17:01:34] --> { "myApp v5.0.0" }
+//  ......
+
+func returnApps(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("request handled:  returnApps")
+
+}
+
+func returnSingleVersion(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  title := vars["title"]
+  version := vars["version"]
+  
+  fmt.Println("request handled:  returnSingleVersion", title, version)
+  
+}
+
+func returnVersionsOfApp(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  title := vars["title"]
+  
+  fmt.Println("request handled:  returnVersionsOfApp", title)
+  
+}
+
+func createOrUpdateAppVersion(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  title := vars["title"]
+  version := vars["version"]
+  
+  fmt.Println("request handled:  createOrUpdateAppVersion", title, version)
+  
+}
+
+func deleteSingleVersion(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  title := vars["title"]
+  version := vars["version"]
+  
+  fmt.Println("request handled:  deleteSingleVersion", title, version)
+  
+}
+
+func deleteAllVersionsOfApp(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  title := vars["title"]
+  
+  fmt.Println("request handled:  deleteAllVersionsOfApp", title)
+  
+}
+
+
+
+func main() { 
+
+  fmt.Println("starting REST server...")
+  
+  router := mux.NewRouter()
+  
+  
+  router.HandleFunc("/apps", returnApps).Methods("GET")
+  
+  
+  
+  router.HandleFunc("/apps/{title}", returnVersionsOfApp).Methods("GET")
+  
+  router.HandleFunc("/apps/{title}", deleteAllVersionsOfApp).Methods("DELETE")
+  
+
+  
+  router.HandleFunc("/apps/{title}/{version}", createOrUpdateAppVersion).Methods("PUT")
+  
+  router.HandleFunc("/apps/{title}/{version}", returnSingleVersion).Methods("GET")
+  
+  router.HandleFunc("/apps/{title}/{version}", deleteSingleVersion).Methods("DELETE")
+  
+
+   
+  
+  log.Fatal(http.ListenAndServe(":8080", router))
+ 
+}
