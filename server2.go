@@ -4,9 +4,9 @@ import (
   "fmt"
   "log"
   "net/http"
-  "net/url"
-  "net/mail"  
-  "github.com/hashicorp/go-version"
+  //"net/url"
+  //"net/mail"  
+  //"github.com/hashicorp/go-version"
     
   "github.com/emicklei/go-restful/v3"
 
@@ -14,13 +14,13 @@ import (
 
 type App struct {
   title string
-  ver version.Version                   // import from https://golangrepo.com/repo/hashicorp-go-version-go-utilities
-  maintainers []mail.Address    // https://pkg.go.dev/net/mail#Address
-  company string
-  website url.URL               // https://pkg.go.dev/net/url
-  source url.URL                // https://pkg.go.dev/net/url
-  license string
-  description string
+//  ver version.Version                   // import from https://golangrepo.com/repo/hashicorp-go-version-go-utilities
+//  maintainers []mail.Address    // https://pkg.go.dev/net/mail#Address
+//  company string
+//  website url.URL               // https://pkg.go.dev/net/url
+//  source url.URL                // https://pkg.go.dev/net/url
+//  license string
+//  description string
 }
 
 // ordered list of creation TimeBuckets
@@ -59,6 +59,25 @@ func createOrUpdateAppVersion(req *restful.Request, resp *restful.Response) {
   version := req.PathParameter("version")
   
   fmt.Println("request handled:  createOrUpdateAppVersion", title, version)
+  
+  
+  app := App{}
+  err := req.ReadEntity(&app)
+  if err == nil {
+  
+     fmt.Println("title : ", app.title)
+     //fmt.Println("ver :  ", app.ver)
+     //fmt.Println("maintainers : ", app.maintainers)
+     //fmt.Println("company :  ", app.company)
+     //fmt.Println("website :  ", app.website)
+     //fmt.Println("source :  ", app.source)
+     //fmt.Println("license :  ", app.license)
+     //fmt.Println("description :  ", app.description)
+     
+  } else {
+     resp.AddHeader("Content-Type", "text/plain")
+     resp.WriteErrorString(http.StatusInternalServerError, err.Error())
+  } 
   
 }
 
